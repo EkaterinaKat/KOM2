@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.katysh.kikiorgmobile.R;
-import com.katyshevtseva.kikiorgmobile.core.SimpleBackupService;
+import com.katyshevtseva.kikiorgmobile.core.backup.JsonBackupService;
 import com.katyshevtseva.kikiorgmobile.view.utils.AdminTaskRecycleView.TaskListAdapter;
 import com.katyshevtseva.kikiorgmobile.view.utils.KomActivity;
 import com.katyshevtseva.kikiorgmobile.view.utils.ViewUtils;
@@ -32,7 +32,7 @@ public class AdminActivity extends KomActivity {
         findViewById(R.id.archive_button).setOnClickListener(view -> startActivity(new Intent(this, ArchiveTasksActivity.class)));
         findViewById(R.id.logs_button).setOnClickListener(view -> startActivity(new Intent(this, LogsActivity.class)));
         findViewById(R.id.backup_button).setOnClickListener(view -> {
-            ViewUtils.copyToClipboard(this, SimpleBackupService.INSTANCE.getBackup());
+            ViewUtils.copyToClipboard(this, JsonBackupService.INSTANCE.getBackup());
             Toast.makeText(this, "Backup copied to clipboard", Toast.LENGTH_LONG).show();
         });
         ViewUtils.setEditTextListener(findViewById(R.id.search_edit_text), s -> taskListAdapter.updateContent(s));

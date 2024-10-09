@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 
 import com.katysh.kikiorgmobile.R;
 import com.katyshevtseva.kikiorgmobile.core.IrregularTaskService;
+import com.katyshevtseva.kikiorgmobile.core.backup.JsonBackupService;
 import com.katyshevtseva.kikiorgmobile.core.KomDao;
 import com.katyshevtseva.kikiorgmobile.core.LogService;
 import com.katyshevtseva.kikiorgmobile.core.OptionalTaskService;
@@ -50,6 +51,7 @@ public class MainActivity extends KomActivity {
         LogService.init(komDao);
         OptionalTaskService.init(komDao);
         SimpleBackupService.init(komDao);
+        JsonBackupService.init(komDao);
         alarmTextView = findViewById(R.id.alarm_text_view);
 
         date = new Date();
