@@ -17,6 +17,7 @@ import com.katyshevtseva.kikiorgmobile.core.IrregularTaskService;
 import com.katyshevtseva.kikiorgmobile.core.RegularTaskService;
 import com.katyshevtseva.kikiorgmobile.core.model.IrregularTask;
 import com.katyshevtseva.kikiorgmobile.core.model.RegularTask;
+import com.katyshevtseva.kikiorgmobile.core.model.Task;
 import com.katyshevtseva.kikiorgmobile.view.IrtEditActivity;
 import com.katyshevtseva.kikiorgmobile.view.QuestionDialog;
 import com.katyshevtseva.kikiorgmobile.view.QuestionDialog.AnswerHandler;
@@ -26,6 +27,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminTaskRecycleView {
+
+    private static List<TaskListItem> getTaskListItems(String searchString) {
+        List<TaskListItem> items = new ArrayList<>();
+        items.add(getHeader("Irregular tasks"));
+        for (IrregularTask irregularTask : IrregularTaskService.INSTANCE.getIrregularTasks(searchString)) {
+            items.add(toListItem(irregularTask));
+        }
+        items.add(getHeader("Regular tasks"));
+        for (RegularTask regularTask : RegularTaskService.INSTANCE.findRegularTasks(searchString)) {
+            items.add(toListItem(regularTask));
+        }
+        return items;
+    }
 
     static class TaskHolder extends RecyclerView.ViewHolder {
         private TaskListAdapter taskListAdapter;
@@ -42,49 +56,48 @@ public class AdminTaskRecycleView {
                 case HEADER:
                     ((TextView) itemView.findViewById(R.id.header_text_view)).setText(item.getText());
                     break;
-                case REGULAR_TASK:
-                    bindRegularTask(item.getRegularTask());
-                    break;
-                case IRREGULAR_TASK:
-                    bindIrregularTask(item.getIrregularTask());
+                case TASK:
+                    bindTask(item.getTask());
             }
         }
 
-        private void bindRegularTask(final RegularTask task) {
+        private void bindTask(final Task task) {
             ((TextView) itemView.findViewById(R.id.task_title_view)).setText(task.getTitle());
             ((TextView) itemView.findViewById(R.id.task_desc_view)).setText(task.getAdminTaskListDesk());
             itemView.findViewById(R.id.edit_task_button).setOnClickListener(
-                    view -> context.startActivity(RtEditActivity.newIntent(context, task)));
-            Button archiveButton = itemView.findViewById(R.id.delete_task_button);
-            archiveButton.setText("Archive");
-            archiveButton.setOnClickListener(view -> {
-                RegularTaskService.INSTANCE.archive(task);
-                Toast.makeText(context, "Archived!", Toast.LENGTH_LONG).show();
-                taskListAdapter.updateContent();
-            });
-        }
-
-        private void bindIrregularTask(final IrregularTask task) {
-            ((TextView) itemView.findViewById(R.id.task_title_view)).setText(task.getTitle());
-            ((TextView) itemView.findViewById(R.id.task_desc_view)).setText(task.getAdminTaskListDesk());
-            itemView.findViewById(R.id.edit_task_button).setOnClickListener(
-                    view -> context.startActivity(IrtEditActivity.newIntent(context, task)));
+                    view -> startEditActivity(task));
             Button deleteButton = itemView.findViewById(R.id.delete_task_button);
-            deleteButton.setText("Delete");
             deleteButton.setOnClickListener(view -> {
-                DialogFragment dlg1 = new QuestionDialog("Delete?", getDeletionDialogAnswerHandler(task));
+
+                AnswerHandler deletionDialogAnswerHandler = answer -> {
+                    if (answer) {
+                        delete(task);
+                        Toast.makeText(context, "Deleted!", Toast.LENGTH_LONG).show();
+                        taskListAdapter.updateContent();
+                    }
+                };
+
+                DialogFragment dlg1 = new QuestionDialog("Delete?", deletionDialogAnswerHandler);
                 dlg1.show(context.getSupportFragmentManager(), "dialog1");
             });
         }
 
-        private AnswerHandler getDeletionDialogAnswerHandler(final IrregularTask task) {
-            return answer -> {
-                if (answer) {
-                    IrregularTaskService.INSTANCE.delete(task);
-                    Toast.makeText(context, "Deleted!", Toast.LENGTH_LONG).show();
-                    taskListAdapter.updateContent();
-                }
-            };
+        private void startEditActivity(Task task) {
+            if (task instanceof RegularTask) {
+                context.startActivity(RtEditActivity.newIntent(context, (RegularTask) task));
+            } else if (task instanceof IrregularTask) {
+                context.startActivity(IrtEditActivity.newIntent(context, (IrregularTask) task));
+            } else
+                throw new RuntimeException();
+        }
+
+        private void delete(Task task) {
+            if (task instanceof RegularTask) {
+                RegularTaskService.INSTANCE.delete((RegularTask) task);
+            } else if (task instanceof IrregularTask) {
+                IrregularTaskService.INSTANCE.delete((IrregularTask) task);
+            } else
+                throw new RuntimeException();
         }
     }
 
@@ -123,8 +136,8 @@ public class AdminTaskRecycleView {
             return R.layout.admin_task_list_item;
         }
 
-        public void updateContent(String s) {
-            items = getTaskListItems(s);
+        public void updateContent(String searchString) {
+            items = getTaskListItems(searchString);
             notifyDataSetChanged();
         }
 
@@ -133,21 +146,8 @@ public class AdminTaskRecycleView {
         }
     }
 
-    private static List<TaskListItem> getTaskListItems(String s) {
-        List<TaskListItem> items = new ArrayList<>();
-        items.add(getHeader("Irregular tasks"));
-        for (IrregularTask irregularTask : IrregularTaskService.INSTANCE.getIrregularTasks(s)) {
-            items.add(toListItem(irregularTask));
-        }
-        items.add(getHeader("Regular tasks"));
-        for (RegularTask regularTask : RegularTaskService.INSTANCE.getNotArchivedRt(s)) {
-            items.add(toListItem(regularTask));
-        }
-        return items;
-    }
-
     private enum TaskListItemType {
-        REGULAR_TASK, IRREGULAR_TASK, HEADER
+        TASK, HEADER
     }
 
     private interface TaskListItem {
@@ -155,9 +155,7 @@ public class AdminTaskRecycleView {
 
         String getText();
 
-        RegularTask getRegularTask();
-
-        IrregularTask getIrregularTask();
+        Task getTask();
     }
 
     private static TaskListItem getHeader(final String text) {
@@ -173,12 +171,7 @@ public class AdminTaskRecycleView {
             }
 
             @Override
-            public RegularTask getRegularTask() {
-                return null;
-            }
-
-            @Override
-            public IrregularTask getIrregularTask() {
+            public Task getTask() {
                 return null;
             }
         };
@@ -188,23 +181,19 @@ public class AdminTaskRecycleView {
         return new TaskListItem() {
             @Override
             public TaskListItemType getType() {
-                return TaskListItemType.REGULAR_TASK;
+                return TaskListItemType.TASK;
             }
 
             @Override
             public String getText() {
-                return regularTask.getTitle();
+                return null;
             }
 
             @Override
-            public RegularTask getRegularTask() {
+            public Task getTask() {
                 return regularTask;
             }
 
-            @Override
-            public IrregularTask getIrregularTask() {
-                return null;
-            }
         };
     }
 
@@ -212,21 +201,16 @@ public class AdminTaskRecycleView {
         return new TaskListItem() {
             @Override
             public TaskListItemType getType() {
-                return TaskListItemType.IRREGULAR_TASK;
+                return TaskListItemType.TASK;
             }
 
             @Override
             public String getText() {
-                return irregularTask.getTitle();
-            }
-
-            @Override
-            public RegularTask getRegularTask() {
                 return null;
             }
 
             @Override
-            public IrregularTask getIrregularTask() {
+            public Task getTask() {
                 return irregularTask;
             }
         };

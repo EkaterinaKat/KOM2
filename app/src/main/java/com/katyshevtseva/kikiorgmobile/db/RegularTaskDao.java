@@ -1,6 +1,5 @@
 package com.katyshevtseva.kikiorgmobile.db;
 
-import static com.katyshevtseva.kikiorgmobile.db.DbConstants.ARCHIVED;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.DESC;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.ID;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.PERIOD;
@@ -8,7 +7,6 @@ import static com.katyshevtseva.kikiorgmobile.db.DbConstants.PERIOD_TYPE;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.TIME_OF_DAY;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.TITLE;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.URGENCY;
-import static com.katyshevtseva.kikiorgmobile.db.lib.DbTable.ColumnActualType.BOOLEAN;
 import static com.katyshevtseva.kikiorgmobile.db.lib.DbTable.ColumnActualType.LONG;
 import static com.katyshevtseva.kikiorgmobile.db.lib.DbTable.ColumnActualType.STRING;
 
@@ -58,8 +56,6 @@ class RegularTaskDao extends AbstractDao<RegularTask> {
                 (regularTask, o) -> regularTask.setPeriodType(PeriodType.findByCode(((Long) o).intValue()))));
         columns.add(new DbTable.Column<>(PERIOD, LONG, RegularTask::getPeriod,
                 (regularTask, o) -> regularTask.setPeriod(((Long) o).intValue())));
-        columns.add(new DbTable.Column<>(ARCHIVED, BOOLEAN, RegularTask::isArchived,
-                (regularTask, o) -> regularTask.setArchived((boolean) o)));
         columns.add(new DbTable.Column<>(URGENCY, LONG, regularTask -> regularTask.getUrgency().getCode(),
                 (regularTask, o) -> regularTask.setUrgency(TaskUrgency.findByCode(((Long) o).intValue()))));
         columns.add(new DbTable.Column<>(TIME_OF_DAY, LONG, regularTask -> regularTask.getTimeOfDay().getCode(),

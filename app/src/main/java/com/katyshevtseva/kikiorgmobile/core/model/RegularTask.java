@@ -17,26 +17,9 @@ public class RegularTask implements Task, Entity {
     private String desc;
     private PeriodType periodType;
     private int period;
-    private boolean archived;
     private List<Date> dates;
     private TaskUrgency urgency;
     private TimeOfDay timeOfDay;
-
-    public RegularTask() {
-    }
-
-    public RegularTask(long id, String title, String desc, PeriodType periodType, int period,
-                       boolean archived, List<Date> dates, TaskUrgency urgency, TimeOfDay timeOfDay) {
-        this.id = id;
-        this.title = title;
-        this.desc = desc;
-        this.periodType = periodType;
-        this.period = period;
-        this.archived = archived;
-        this.dates = dates;
-        this.urgency = urgency;
-        this.timeOfDay = timeOfDay;
-    }
 
     public String getAdminTaskListDesk() {
         return String.format("%s\n\n%s\n%s %s\n%s",
@@ -73,7 +56,6 @@ public class RegularTask implements Task, Entity {
                 ", desc='" + desc + '\'' +
                 ", periodType=" + periodType +
                 ", period=" + period +
-                ", archived=" + archived +
                 ", dates=" + dates +
                 '}';
     }
@@ -124,14 +106,6 @@ public class RegularTask implements Task, Entity {
 
     public void setPeriod(int period) {
         this.period = period;
-    }
-
-    public boolean isArchived() {
-        return archived;
-    }
-
-    public void setArchived(boolean archived) {
-        this.archived = archived;
     }
 
     public List<Date> getDates() {

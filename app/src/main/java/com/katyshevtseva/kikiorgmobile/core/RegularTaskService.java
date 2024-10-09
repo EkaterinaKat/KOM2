@@ -59,31 +59,16 @@ public class RegularTaskService {
         }
     }
 
-    public List<RegularTask> getNotArchivedRt(String s) {
+    public List<RegularTask> findRegularTasks(String searchString) {
         return komDao.getAllRegularTasks().stream()
-                .filter(task -> !task.isArchived())
-                .filter(task -> taskFilter(task, s))
+                .filter(task -> taskFilter(task, searchString))
                 .sorted(Comparator.comparing(task -> task.getTitle().toLowerCase()))
                 .collect(Collectors.toList());
     }
 
-    public List<RegularTask> getArchivedRt() {
-        return komDao.getAllRegularTasks().stream()
-                .filter(RegularTask::isArchived)
-                .sorted(Comparator.comparing(task -> task.getTitle().toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-    public void archive(RegularTask regularTask) {
-        regularTask.setArchived(true);
-        komDao.update(regularTask);
-        LogService.INSTANCE.saveLog(Log.Action.ARCHIVATION, regularTask);
-    }
-
-    public void resume(RegularTask regularTask) {
-        regularTask.setArchived(false);
-        komDao.update(regularTask);
-        LogService.INSTANCE.saveLog(Log.Action.RESUME, regularTask);
+    public void delete(RegularTask regularTask) {
+        komDao.delete(regularTask);
+        LogService.INSTANCE.saveLog(Log.Action.DELETION, regularTask);
     }
 
     public void done(RegularTask regularTask, Date date) {

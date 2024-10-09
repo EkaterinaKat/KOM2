@@ -1,7 +1,6 @@
 package com.katyshevtseva.kikiorgmobile.db;
 
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.ACTION;
-import static com.katyshevtseva.kikiorgmobile.db.DbConstants.ARCHIVED;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.DATE;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.DESC;
 import static com.katyshevtseva.kikiorgmobile.db.DbConstants.ID;
@@ -43,8 +42,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 PERIOD_TYPE + " INTEGER, " +
                 TIME_OF_DAY + " INTEGER, " +
                 URGENCY + " INTEGER, " +
-                PERIOD + " INTEGER, " +
-                ARCHIVED + " INTEGER )");
+                PERIOD + " INTEGER )");
 
         database.execSQL("create table " + RtDateDao.NAME + "(" +
                 ID + " INTEGER primary key autoincrement, " +

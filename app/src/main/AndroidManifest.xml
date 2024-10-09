@@ -19,7 +19,6 @@
 
         <activity android:name="com.katyshevtseva.kikiorgmobile.view.RtEditActivity" />
         <activity android:name="com.katyshevtseva.kikiorgmobile.view.LogsActivity" />
-        <activity android:name="com.katyshevtseva.kikiorgmobile.view.ArchiveTasksActivity" />
         <activity android:name="com.katyshevtseva.kikiorgmobile.view.IrtEditActivity" />
         <activity android:name="com.katyshevtseva.kikiorgmobile.view.AdminActivity" />
         <activity android:name="com.katyshevtseva.kikiorgmobile.view.MainActivity" android:exported="true">

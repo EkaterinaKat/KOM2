@@ -18,4 +18,6 @@ public interface Task {
     void setUrgency(TaskUrgency urgency);
 
     TimeOfDay getTimeOfDay();
+
+    String getAdminTaskListDesk();
 }

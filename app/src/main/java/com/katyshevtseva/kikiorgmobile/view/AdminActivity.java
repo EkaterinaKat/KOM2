@@ -29,7 +29,6 @@ public class AdminActivity extends KomActivity {
 
         findViewById(R.id.new_task_button).setOnClickListener(view ->
                 startActivity(RtEditActivity.newIntent(AdminActivity.this, null)));
-        findViewById(R.id.archive_button).setOnClickListener(view -> startActivity(new Intent(this, ArchiveTasksActivity.class)));
         findViewById(R.id.logs_button).setOnClickListener(view -> startActivity(new Intent(this, LogsActivity.class)));
         findViewById(R.id.backup_button).setOnClickListener(view -> {
             ViewUtils.copyToClipboard(this, JsonBackupService.INSTANCE.getBackup());

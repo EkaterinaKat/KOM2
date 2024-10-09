@@ -39,7 +39,7 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:text="Del"
+            android:text="Delete"
             android:textSize="10sp" />
     </LinearLayout>
 

@@ -10,7 +10,6 @@ import com.katyshevtseva.kikiorgmobile.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Service {
@@ -29,8 +28,7 @@ public class Service {
         List<Task> tasks = new ArrayList<>();
 
         tasks.addAll(komDao.getIrregularTasksByDate(date));
-        tasks.addAll(komDao.getRegularTasksByDate(date).stream()
-                .filter(regularTask -> !regularTask.isArchived()).collect(Collectors.toList()));
+        tasks.addAll(komDao.getRegularTasksByDate(date));
 
         return tasks;
     }
@@ -39,7 +37,7 @@ public class Service {
         Stream<Date> irtDatesStream = komDao.getAllIrregularTasks().stream()
                 .map(IrregularTask::getDate);
 
-        Stream<Date> rtDatesStream = RegularTaskService.INSTANCE.getNotArchivedRt(null).stream()
+        Stream<Date> rtDatesStream = RegularTaskService.INSTANCE.findRegularTasks(null).stream()
                 .flatMap(task -> task.getDates().stream());
 
         return Stream.concat(irtDatesStream, rtDatesStream).sorted().findFirst().orElse(null);

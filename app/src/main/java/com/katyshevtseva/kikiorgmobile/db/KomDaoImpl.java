@@ -154,6 +154,12 @@ public class KomDaoImpl implements KomDao {
     }
 
     @Override
+    public void delete(RegularTask regularTask) {
+        rtDateDao.delete(TASK_ID, String.valueOf(regularTask.getId()));
+        regularTaskDao.delete(regularTask);
+    }
+
+    @Override
     public RegularTask getRegularTaskById(long id) {
         RegularTask task = regularTaskDao.findFirst(ID, "" + id);
         task.setDates(findDatesByRegularTask(task));
