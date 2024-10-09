@@ -63,7 +63,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        database.execSQL("ALTER TABLE irregular_task ADD desc TEXT; ");
+//        database.execSQL("ALTER TABLE irregular_task ADD desc TEXT; ");
 //        database.execSQL("Update irregular_task set time_of_day = 1; ");
 //        database.execSQL("Update regular_task set time_of_day = 1; ");
 //        database.execSQL("ALTER TABLE irregular_task ADD duration TEXT; ");

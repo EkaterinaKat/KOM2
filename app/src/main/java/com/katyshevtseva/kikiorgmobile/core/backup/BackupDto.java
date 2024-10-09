@@ -32,4 +32,12 @@ public class BackupDto {
     public void setIrregularTasks(List<IrregularTask> irregularTasks) {
         this.irregularTasks = irregularTasks;
     }
+
+    @Override
+    public String toString() {
+        return "BackupDto{" +
+                "regularTasks=" + regularTasks +
+                ", irregularTasks=" + irregularTasks +
+                '}';
+    }
 }

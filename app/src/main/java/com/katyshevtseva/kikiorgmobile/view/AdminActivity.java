@@ -34,10 +34,17 @@ public class AdminActivity extends KomActivity {
             ViewUtils.copyToClipboard(this, JsonBackupService.INSTANCE.getBackup());
             Toast.makeText(this, "Backup copied to clipboard", Toast.LENGTH_LONG).show();
         });
+        findViewById(R.id.restore_button).setOnClickListener(view -> {
+            openRestoreDialog();
+        });
         ViewUtils.setEditTextListener(findViewById(R.id.search_edit_text), s -> taskListAdapter.updateContent(s));
         RecyclerView taskList = findViewById(R.id.admin_task_list);
         taskList.setLayoutManager(new LinearLayoutManager(this));
         taskListAdapter = new TaskListAdapter(this);
         taskList.setAdapter(taskListAdapter);
+    }
+
+    private void openRestoreDialog() {
+        new RestoreDialog(taskListAdapter::updateContent).show(getSupportFragmentManager(), "RestoreDialog");
     }
 }

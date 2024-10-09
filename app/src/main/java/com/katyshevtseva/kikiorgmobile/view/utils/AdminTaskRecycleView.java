@@ -30,12 +30,14 @@ public class AdminTaskRecycleView {
 
     private static List<TaskListItem> getTaskListItems(String searchString) {
         List<TaskListItem> items = new ArrayList<>();
-        items.add(getHeader("Irregular tasks"));
-        for (IrregularTask irregularTask : IrregularTaskService.INSTANCE.getIrregularTasks(searchString)) {
+        List<IrregularTask> its = IrregularTaskService.INSTANCE.getIrregularTasks(searchString);
+        items.add(getHeader("Irregular tasks (" + its.size() + ")"));
+        for (IrregularTask irregularTask : its) {
             items.add(toListItem(irregularTask));
         }
-        items.add(getHeader("Regular tasks"));
-        for (RegularTask regularTask : RegularTaskService.INSTANCE.findRegularTasks(searchString)) {
+        List<RegularTask> rts = RegularTaskService.INSTANCE.findRegularTasks(searchString);
+        items.add(getHeader("Regular tasks (" + rts.size() + ")"));
+        for (RegularTask regularTask : rts) {
             items.add(toListItem(regularTask));
         }
         return items;
