@@ -1,5 +1,6 @@
 package com.katyshevtseva.kikiorgmobile.view;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,11 +33,29 @@ public class RestoreDialog extends DialogFragment {
         restoreButton.setOnClickListener(view -> {
             String string = editText.getText().toString();
             if (!GeneralUtil.isEmpty(string)) {
-                JsonBackupService.INSTANCE.restore(string);
-                dismiss();
+                try {
+                    JsonBackupService.INSTANCE.restore(string);
+                    Toast.makeText(getContext(), "Restored", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    showAlertDialog();
+                } finally {
+                    dismiss();
+                }
+
             }
         });
         return v;
+    }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext()); // 'this' — контекст активности
+        builder.setTitle("Ашипка!"); // задаём заголовок
+        builder.setMessage("Ашипка!"); // задаём текст сообщения
+        builder.setPositiveButton("ОК", (dialog, which) -> {
+            dialog.dismiss(); // закрыть диалог при нажатии
+        });
+        AlertDialog dialog = builder.create(); // создаём диалог
+        dialog.show(); // показываем диалог
     }
 
     @Override
@@ -44,6 +63,5 @@ public class RestoreDialog extends DialogFragment {
         super.onDismiss(dialog);
         activityUpdateKnob.execute();
         GeneralUtil.setImmersiveStickyMode(getActivity().getWindow());
-        Toast.makeText(getContext(), "Restored", Toast.LENGTH_LONG).show();
     }
 }

@@ -22,7 +22,8 @@
         android:gravity="center"
         android:hint="description"
         android:inputType="textMultiLine"
-        android:lines="3"
+        android:minLines="2"
+        android:maxLines="12"
         android:textColor="@color/black" />
 
     <Spinner

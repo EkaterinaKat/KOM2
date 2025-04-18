@@ -23,7 +23,7 @@ public class JsonBackupService {
         return gson.toJson(dto);
     }
 
-    public void restore(String json) {
+    public void restore(String json) throws Exception {
         clearDb();
 
         Gson gson = new Gson();

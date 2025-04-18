@@ -22,7 +22,8 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:textColor="@color/black"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        tools:text="12.04.2025 (Сб)" />
 
     <Button
         android:id="@+id/add_irt_button"
