@@ -1,5 +1,8 @@
 package com.katyshevtseva.kikiorgmobile.view;
 
+import static com.katyshevtseva.kikiorgmobile.utils.GeneralUtil.getLoppedDateListString;
+import static com.katyshevtseva.kikiorgmobile.utils.GeneralUtil.isEmpty;
+
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,15 +49,12 @@ public class TaskMenuDialog extends DialogFragment {
         View itemView = inflater.inflate(R.layout.dialog_task_menu, null);
 
         ((TextView) itemView.findViewById(R.id.title_text_view)).setText(task.getTitle());
-        if (!GeneralUtil.isEmpty(task.getDesc())) {
-            TextView textView = itemView.findViewById(R.id.desc_text_view);
-            textView.setText(task.getDesc());
-            textView.setOnClickListener(view -> {
-                ViewUtils.copyToClipboard(context, task.getDesc());
-                Toast.makeText(context, "Desc copied", Toast.LENGTH_LONG).show();
-            });
-        } else
-            itemView.findViewById(R.id.desc_text_view).setVisibility(View.GONE);
+        TextView textView = itemView.findViewById(R.id.desc_text_view);
+
+        String desc = formDesc(task);
+        if (!isEmpty(desc)) {
+            textView.setText(desc);
+        } else textView.setVisibility(View.GONE);
 
         itemView.findViewById(R.id.done_button).setOnClickListener(view -> {
             switch (task.getType()) {
@@ -74,16 +73,14 @@ public class TaskMenuDialog extends DialogFragment {
                     dismiss();
                     break;
                 case REGULAR:
-                    DialogFragment dlg1 = new QuestionDialog("Shift all cycle?",
-                            answer -> {
-                                RegularTaskService.INSTANCE.rescheduleForOneDay((RegularTask) task, date, answer);
-                                dismiss();
-                            });
+                    DialogFragment dlg1 = new QuestionDialog("Shift all cycle?", answer -> {
+                        RegularTaskService.INSTANCE.rescheduleForOneDay((RegularTask) task, date, answer);
+                        dismiss();
+                    });
                     dlg1.show(context.getSupportFragmentManager(), "dialog2");
             }
         });
-        itemView.findViewById(R.id.more_days_reschedule_button).setOnClickListener(
-                view -> rescheduleWithDatePicker(task, date));
+        itemView.findViewById(R.id.more_days_reschedule_button).setOnClickListener(view -> rescheduleWithDatePicker(task, date));
 
         itemView.findViewById(R.id.edit_task_button).setOnClickListener(view -> {
             switch (task.getType()) {
@@ -101,6 +98,28 @@ public class TaskMenuDialog extends DialogFragment {
         return itemView;
     }
 
+    private String formDesc(Task task) {
+        String result = "";
+
+        if (!GeneralUtil.isEmpty(task.getDesc())) {
+            result = task.getDesc();
+        }
+
+        if (task instanceof RegularTask) {
+            RegularTask rt = (RegularTask) task;
+            if (!isEmpty(result)) {
+                result += "\n\n";
+            }
+            result += String.format(
+                    "%s %s\n%s",
+                    rt.getPeriod(),
+                    rt.getPeriodType(),
+                    getLoppedDateListString(rt.getDates()));
+        }
+
+        return result;
+    }
+
     private void tuneUrgencyBox(View v) {
         LinearLayout linearLayout = v.findViewById(R.id.urgency_setting_box);
         for (TaskUrgency urgency : TaskUrgency.values()) {
@@ -116,16 +135,15 @@ public class TaskMenuDialog extends DialogFragment {
 
     private void regularEditListener() {
 
-        DialogFragment dlg1 = new QuestionDialog("Edit all tasks in cycle?",
-                answer -> {
-                    if (answer) {
-                        context.startActivity(RtEditActivity.newIntent(context, (RegularTask) task));
-                    } else {
-                        RegularTaskService.INSTANCE.done((RegularTask) task, date);
-                        context.startActivity(IrtEditActivity.getRegToIrregIntent(context, (RegularTask) task));
-                    }
-                    dismiss();
-                });
+        DialogFragment dlg1 = new QuestionDialog("Edit all tasks in cycle?", answer -> {
+            if (answer) {
+                context.startActivity(RtEditActivity.newIntent(context, (RegularTask) task));
+            } else {
+                RegularTaskService.INSTANCE.done((RegularTask) task, date);
+                context.startActivity(IrtEditActivity.getRegToIrregIntent(context, (RegularTask) task));
+            }
+            dismiss();
+        });
         dlg1.show(context.getSupportFragmentManager(), "dialog2");
     }
 
